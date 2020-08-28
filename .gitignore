@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+travelando/__pycache__/
+business_logic/__pycache__/
+db.sqlite3
+.DS_Store/
