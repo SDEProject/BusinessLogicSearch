@@ -15,9 +15,11 @@ class SearchBusinessView(View):
     def get(self, request):
         parameters = request.GET
         # print(parameters.get('shop_enum', None))
-
+        print(parameters)
+        print('call query')
         response_query = requests.get(f"http://{settings.SERVICE_UTILITY_HOST}:{settings.SERVICE_UTILITY_PORT}/{settings.SERVICE_UTILITY}/query_selection", parameters)
         query = json.loads(response_query.content)['query']
+        print('done')
         # returned_params = json.loads(response_query.content)['returned_params']
 
         json_parameters = dict(parameters)
