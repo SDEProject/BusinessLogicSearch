@@ -17,10 +17,7 @@ class SearchBusinessView(View):
         # print(parameters.get('shop_enum', None))
         print(parameters)
         print('call query')
-        print(f"http://{settings.SERVICE_UTILITY_HOST}/{settings.SERVICE_UTILITY}/query_selection")
-        # response_query = requests.get(f"http://{settings.SERVICE_UTILITY_HOST}:{settings.SERVICE_UTILITY_PORT}/{settings.SERVICE_UTILITY}/query_selection", parameters)
-        response_query = requests.get(f"http://{settings.SERVICE_UTILITY_HOST}/{settings.SERVICE_UTILITY}/query_selection", parameters)
-        print(response_query)
+        response_query = requests.get(f"http://{settings.SERVICE_QUERY_SELECTION_HOST}:{settings.SERVICE_QUERY_SELECTION_PORT}/{settings.SERVICE_QUERY_SELECTION}/query_selection", parameters)
         query = json.loads(response_query.content)['query']
         print('done')
         # returned_params = json.loads(response_query.content)['returned_params']
@@ -30,7 +27,7 @@ class SearchBusinessView(View):
 
         # print(json_parameters)
         # print(f"http://{settings.SERVICE_KNOWLEDGE_HOST}:{settings.SERVICE_KNOWLEDGE_PORT}/{settings.SERVICE_KNOWLEDGE}/queries")
-        response = requests.get(f"http://{settings.SERVICE_KNOWLEDGE_HOST}/{settings.SERVICE_KNOWLEDGE}/queries", json_parameters)
+        response = requests.get(f"http://{settings.SERVICE_KNOWLEDGE_HOST}:{settings.SERVICE_KNOWLEDGE_PORT}/{settings.SERVICE_KNOWLEDGE}/queries", json_parameters)
         # print(response.content)
         json_response = json.loads(response.content)
 
