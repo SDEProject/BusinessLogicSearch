@@ -17,6 +17,7 @@ class SearchBusinessView(View):
         # print(parameters.get('shop_enum', None))
         print(parameters)
         print('call query')
+        print(f"http://{settings.SERVICE_UTILITY_HOST}/{settings.SERVICE_UTILITY}/query_selection")
         # response_query = requests.get(f"http://{settings.SERVICE_UTILITY_HOST}:{settings.SERVICE_UTILITY_PORT}/{settings.SERVICE_UTILITY}/query_selection", parameters)
         response_query = requests.get(f"http://{settings.SERVICE_UTILITY_HOST}/{settings.SERVICE_UTILITY}/query_selection", parameters)
         print(response_query)
