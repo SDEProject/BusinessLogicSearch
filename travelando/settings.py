@@ -132,19 +132,19 @@ SERVICE_MYDB_ADAPTER_LAYER_HOST = 'localhost'
 
 SERVICE_CHOREOGRAPHER = 'choreographer'
 SERVICE_CHOREOGRAPHER_PORT = 50006 if DEBUG else 80
-SERVICE_CHOREOGRAPHER_HOST = 'localhost'
+SERVICE_CHOREOGRAPHER_HOST = 'localhost' if DEBUG else 'travelando.herokuapp.com'
 
 SERVICE_BUSINESS_LOGIC = 'business_search'
 SERVICE_BUSINESS_LOGIC_PORT = 50007 if DEBUG else 80
-SERVICE_BUSINESS_LOGIC_HOST = 'localhost'
+SERVICE_BUSINESS_LOGIC_HOST = 'localhost' if DEBUG else 'business-logic-search.herokuapp.com'
 
 SERVICE_PROCESS_CENTRIC = 'process_search'
 SERVICE_PROCESS_CENTRIC_PORT = 50008 if DEBUG else 80
-SERVICE_PROCESS_CENTRIC_HOST = 'localhost'
+SERVICE_PROCESS_CENTRIC_HOST = 'localhost' if DEBUG else 'process-centri-search.herokuapp.com'
 
 SERVICE_KNOWLEDGE = 'knowledge_graph'
 SERVICE_KNOWLEDGE_PORT = 50009 if DEBUG else 80
-SERVICE_KNOWLEDGE_HOST = 'localhost'
+SERVICE_KNOWLEDGE_HOST = 'localhost' if DEBUG else 'knowledge-graph-data.herokuapp.com'
 
 SERVICE_PROCESS_CENTRIC_DB = 'process_centric_db'
 SERVICE_PROCESS_CENTRIC_DB_PORT = 50010 if DEBUG else 80
@@ -156,6 +156,6 @@ SERVICE_BUSINESS_LOGIC_DB_HOST = 'localhost'
 
 SERVICE_QUERY_SELECTION = 'query_selection'
 SERVICE_QUERY_SELECTION_PORT = 50012
-SERVICE_QUERY_SELECTION_HOST = 'localhost'
+SERVICE_QUERY_SELECTION_HOST = 'localhost' if DEBUG else 'travelando-utility.herokuapp.com'
 
 SERVICE_NAME = os.environ.get('TRAVELANDO_SERVICE', "")
