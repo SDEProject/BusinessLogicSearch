@@ -26,12 +26,11 @@ class SearchBusinessView(View):
         json_response = json.loads(response.content)
 
         response = {
-            "payload": {
-                "telegram": {
-                    "text": response_templates(query, json_response['results'], parameters),
-                    "parse_mode": "MarkdownV2"
+            "fulfillmentMessages": [{
+                "text": {
+                    "text": [response_templates(query, json_response['results'], parameters)]
                 }
-            }
+            }]
         }
         return JsonResponse(response)
 
