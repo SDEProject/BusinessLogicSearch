@@ -14,50 +14,37 @@ import json
 class SearchBusinessView(View):
     def get(self, request):
         parameters = request.GET
-        # print(parameters.get('shop_enum', None))
-        print(parameters)
-        print('call query')
+
         response_query = requests.get(f"http://{settings.SERVICE_QUERY_SELECTION_HOST}:{settings.SERVICE_QUERY_SELECTION_PORT}/{settings.SERVICE_QUERY_SELECTION}/query_selection", parameters)
         query = json.loads(response_query.content)['query']
-        print('done')
         # returned_params = json.loads(response_query.content)['returned_params']
 
         json_parameters = dict(parameters)
         json_parameters['query'] = query
 
-        # print(json_parameters)
-        # print(f"http://{settings.SERVICE_KNOWLEDGE_HOST}:{settings.SERVICE_KNOWLEDGE_PORT}/{settings.SERVICE_KNOWLEDGE}/queries")
         response = requests.get(f"http://{settings.SERVICE_KNOWLEDGE_HOST}:{settings.SERVICE_KNOWLEDGE_PORT}/{settings.SERVICE_KNOWLEDGE}/queries", json_parameters)
-        # print(response.content)
         json_response = json.loads(response.content)
 
         response = {
-                     "fulfillmentMessages": [
-                         {
-                           "text": {
-                             "text": response_templates(query, json_response['results'], parameters)
-                           }
-                         }
-                       ]
-                     }
-
-        # for res in json_response['results']:
-        #     response['fulfillmentMessages'][0]['text']['text'].append('The hotel ' + res['name'] + ' starts checkin at ' + res['starthour'] + ' and ends at ' + res['endhour'] + '.')
-
-        # retrieve get parameter request.GET.get('intentName', None)
-        # response['fulfillmentMessages'][0]['text']['text'].append('I\'ll execute query ' + query)
-        # return JsonResponse(response.json(), safe=False)
+            "payload": {
+                "telegram": {
+                    "text": response_templates(query, json_response['results'], parameters),
+                    "parse_mode": "MarkdownV2"
+                }
+            }
+        }
         return JsonResponse(response)
 
 
 def response_templates(query, results, parameters):
-    messages = []
+    messages = ''
     print(results)
 
     if query == '3':
-        template = 'The hotel {name} starts checkin at {starthour} and ends at {endhour}.'
+        template = 'The hotel *{name}* starts checkin at {starthour} and ends at {endhour}.'
         for res in results:
-            messages.append(template.format(name=res['name'], starthour=res['starthour'], endhour=res['endhour']))
+            endhour = '00:00' if res['endhour'] == 'None' else res['endhour']
+            messages += template.format(name=res['name'], starthour=res['starthour'], endhour=endhour) + '\n'
     elif query == '6':
         template = 'The hotel {name} in {city} starts checkin at {starthour} and ends at {endhour}.'
         for res in results:
