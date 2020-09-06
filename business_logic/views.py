@@ -79,8 +79,12 @@ def response_templates(query, results, parameters):
                     tmp.append('• ' + res['name'])
                 messages = template + ';\n'.join(tmp) + '.'
             elif query == '7':
-                template = f'There are {len(results)} {normalize_enum(parameters.get("shop_enum", None))}. Here the first {MAXIMUM_RESULTS_SHOWN}: \n'
-                shop_template = '• {name} is in {address}, {city} ({region})'
+                template = f'There are {len(results)} {normalize_enum(parameters.get("shop_enum", None))}'
+                if iterations <= MAXIMUM_RESULTS_SHOWN:
+                    template += ':\n'
+                else:
+                    template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+                shop_template = '• {name}\n\tin {address}, {city} ({region})'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
@@ -91,9 +95,9 @@ def response_templates(query, results, parameters):
             elif query == '9':
                 template = f'There are {len(results)} {parameters.get("path_difficulty", None)} difficulty activity paths {parameters.get("info_equipment", None)}.'
                 if iterations <= MAXIMUM_RESULTS_SHOWN:
-                    template += '\n'
+                    template += '\n\n'
                 else:
-                    template += f' Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+                    template += f' Here the first {MAXIMUM_RESULTS_SHOWN}:\n\n'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
@@ -123,9 +127,9 @@ def response_templates(query, results, parameters):
             elif query == '14':
                 template = f'There are {len(results)} activity paths with {parameters.get("difficulty", None)} difficulty.'
                 if iterations <= MAXIMUM_RESULTS_SHOWN:
-                    template += '\n'
+                    template += '\n\n'
                 else:
-                    template += f' Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+                    template += f' Here the first {MAXIMUM_RESULTS_SHOWN}:\n\n'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
@@ -139,9 +143,9 @@ def response_templates(query, results, parameters):
             elif query == '17':
                 template = f'There are {len(results)} activity paths from {parameters.get("poi_activity_from", None)}.'
                 if iterations <= MAXIMUM_RESULTS_SHOWN:
-                    template += '\n'
+                    template += '\n\n'
                 else:
-                    template += f' Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+                    template += f' Here the first {MAXIMUM_RESULTS_SHOWN}:\n\n'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
@@ -156,9 +160,9 @@ def response_templates(query, results, parameters):
             elif query == '18':
                 template = f'There are {len(results)} activity paths from {parameters.get("poi_activity_from", None)} to {parameters.get("poi_activity_to", None)}.'
                 if iterations <= MAXIMUM_RESULTS_SHOWN:
-                    template += '\n'
+                    template += '\n\n'
                 else:
-                    template += f' Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+                    template += f' Here the first {MAXIMUM_RESULTS_SHOWN}:\n\n'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
