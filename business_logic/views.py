@@ -138,13 +138,12 @@ def response_templates(query, results, parameters):
             template = f'There are {len(results)} activity paths with number {parameters.get("path_number", None)}.\n\n'
             tmp = []
             for res in results:
-                details = f'The activity path {parameters.get("path_number", None)} has the following details:\n'
-                details += f'• activity path {res["name"]};\n'
-                details += f'• difficulty {res["difficulty"]};\n'
+                details = f'The activity path {res["name"]} has the following details:\n'
+                details += f'• difficulty {normalize_from_ontology(res["difficulty"])};\n'
                 details += f'• from {res["poi_from"]};\n'
                 details += f'• to {res["poi_to"]};\n'
-                details += f'• length {res["length"]} meters;\n'
-                details += f'• duration {res["time"]} minutes.'
+                details += f'• length {res["length"]["#text"]} meters;\n'
+                details += f'• duration {res["time"]["#text"]} minutes.'
                 tmp.append(details)
             messages = template + '\n\n'.join(tmp)
     else:
