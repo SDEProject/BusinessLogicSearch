@@ -89,13 +89,21 @@ def response_templates(query, results, parameters):
             elif query == '8':
                 template = 'The {difficulty} difficulty activity paths with duration {time} are: {paths}.'
             elif query == '9':
-                template = f'There are {len(results)} {parameters.get("path_difficulty", None)} difficulty activity paths {parameters.get("info_equipment", None)}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
-                path_template = '• activity path {name} from {poi_from} to {poi_to}'
+                template = f'There are {len(results)} {parameters.get("path_difficulty", None)} difficulty activity paths {parameters.get("info_equipment", None)}.'
+                if iterations <= MAXIMUM_RESULTS_SHOWN:
+                    template += '\n'
+                else:
+                    template += f' Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
-                    tmp.append(path_template.format(name=res['name'], poi_from=res['poi_from'], poi_to=res['poi_to']))
-                messages = template + ';\n'.join(tmp) + '.'
+                    details = f'The activity path {res["name"]} has the following details:\n'
+                    details += f'• from {res["poi_from"]};\n'
+                    details += f'• to {res["poi_to"]};\n'
+                    details += f'• length {res["length"]["#text"]} meters;\n'
+                    details += f'• duration {res["time"]["#text"]} minutes.'
+                    tmp.append(details)
+                messages = template + '\n\n'.join(tmp)
             elif query == '12':
                 template = f'There are {len(results)} smooth activity paths. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
                 path_template = '• activity path {name} from {poi_from} to {poi_to}'
@@ -127,7 +135,7 @@ def response_templates(query, results, parameters):
                     details += f'• length {res["length"]["#text"]} meters;\n'
                     details += f'• duration {res["time"]["#text"]} minutes.'
                     tmp.append(details)
-                messages = template + ';\n'.join(tmp) + '.'
+                messages = template + '\n\n'.join(tmp)
             elif query == '17':
                 template = f'There are {len(results)} activity paths from {parameters.get("poi_activity_from", None)}.'
                 if iterations <= MAXIMUM_RESULTS_SHOWN:
@@ -144,7 +152,7 @@ def response_templates(query, results, parameters):
                     details += f'• length {res["length"]["#text"]} meters;\n'
                     details += f'• duration {res["time"]["#text"]} minutes.'
                     tmp.append(details)
-                messages = template + '\n\n'.join(tmp) + '.'
+                messages = template + '\n\n'.join(tmp)
             elif query == '18':
                 template = f'There are {len(results)} activity paths from {parameters.get("poi_activity_from", None)} to {parameters.get("poi_activity_to", None)}.'
                 if iterations <= MAXIMUM_RESULTS_SHOWN:
@@ -159,7 +167,7 @@ def response_templates(query, results, parameters):
                     details += f'• length {res["length"]["#text"]} meters;\n'
                     details += f'• duration {res["time"]["#text"]} minutes.'
                     tmp.append(details)
-                messages = template + '\n\n'.join(tmp) + '.'
+                messages = template + '\n\n'.join(tmp)
             elif query == '19':
                 template = f'There are {len(results)} activity paths with number {parameters.get("path_number", None)}.\n\n'
                 tmp = []
