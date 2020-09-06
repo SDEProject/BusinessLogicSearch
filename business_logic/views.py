@@ -10,6 +10,9 @@ from travelando import settings
 import json
 
 
+MAXIMUM_RESULTS_SHOWN = 5
+
+
 # Create your views here.
 class SearchBusinessView(View):
     def get(self, request):
@@ -39,40 +42,113 @@ def response_templates(query, results, parameters):
     messages = ''
     print(results)
 
-    if query == '3':
-        template = 'The hotel *{name}* starts checkin at {starthour} and ends at {endhour}.'
-        for res in results:
-            endhour = '00:00' if res['endhour'] == 'None' else res['endhour']
-            messages += template.format(name=res['name'], starthour=res['starthour'], endhour=endhour) + '\n'
-    elif query == '6':
-        template = 'The hotel {name} in {city} starts checkin at {starthour} and ends at {endhour}.'
-        for res in results:
-            messages.append(template.format(name=res['name'], city=res['city'], starthour=res['starthour'], endhour=res['endhour']))
-    elif query == '4':
-        template = 'The {shop_enum} in {region} are: {shops}.'
-        tmp = []
-        for res in results:
-            tmp.append(res['name'] + ' ('+res['city']+')')
-        messages.append(template.format(shop_enum=normalize_enum(parameters.get('shop_enum', None)), region=parameters.get('region', None), shops=', '.join(tmp)))
-    elif query == '5':
-        template = 'The {shop_enum} in {city} ({region}) are: {shops}.'
-        tmp = []
-        for res in results:
-            tmp.append(res['name'])
-        messages.append(template.format(shop_enum=normalize_enum(parameters.get('shop_enum', None)), city=parameters.get('city', None), region=parameters.get('region', None), shops=', '.join(tmp)))
-    elif query == '7':
-        template = 'The {shop_enum} {name} is in {address}, {city} ({region}).'
-        for res in results:
-            messages.append(template.format(shop_enum=normalize_enum(parameters.get('shop_enum', None)), name=res['name'], address=res['street'], city=res['city'], region=normalize_from_ontology(res['province'])))
-    elif query == '8':
-        template = 'The {difficulty} difficulty activity paths with duration {time} are: {paths}.'
-    elif query == '9':
-        template = 'The {difficulty} difficulty activity paths {equipment} are: {paths}.'
-        path_template = 'activity path {name} starts in {poi_from} and ends in {poi_to}'
-        tmp = []
-        for res in results:
-            tmp.append(path_template.format(name=res['name'], poi_from=res['poi_from'], poi_to=res['poi_to']))
-        messages.append(template.format(difficulty=parameters.get('path_difficulty', None), equipment=parameters.get('info_equipment', None), paths='; '.join(tmp)))
+    if len(results) > 0:
+        if query == '3':
+            hot = 'hotels' if len(results) > 1 else 'hotel'
+            template = f'I\' ve found {len(results)} {hot}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+            hotel_template = '• {name} starts checkin at {starthour} and ends at {endhour}'
+            tmp = []
+            for index in range(MAXIMUM_RESULTS_SHOWN):
+                res = results[index]
+                endhour = '00:00' if res['endhour'] == 'None' else res['endhour']
+                tmp.append(hotel_template.format(name=res['name'], starthour=res['starthour'], endhour=endhour))
+            messages = template + ';\n'.join(tmp) + '.'
+        elif query == '6':
+            hot = 'hotels' if len(results) > 1 else 'hotel'
+            template = f'I\' ve found {len(results)} {hot}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+            hotel_template = '• {name} in {city} starts checkin at {starthour} and ends at {endhour}'
+            tmp = []
+            for index in range(MAXIMUM_RESULTS_SHOWN):
+                res = results[index]
+                tmp.append(hotel_template.format(name=res['name'], city=res['city'], starthour=res['starthour'], endhour=res['endhour']))
+            messages = template + ';\n'.join(tmp) + '.'
+        elif query == '4':
+            template = f'There are {len(results)} {normalize_enum(parameters.get("shop_enum", None))} in {parameters.get("region", None)}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n.'
+            tmp = []
+            for index in range(MAXIMUM_RESULTS_SHOWN):
+                res = results[index]
+                tmp.append('• ' + res['name'] + ' ('+res['city']+')')
+            messages = template + ';\n'.join(tmp) + '.'
+        elif query == '5':
+            template = f'There {len(results)} {normalize_enum(parameters.get("shop_enum", None))} in {parameters.get("city", None)} ({parameters.get("region", None)}). Here the first {MAXIMUM_RESULTS_SHOWN}:'
+            tmp = []
+            for index in range(MAXIMUM_RESULTS_SHOWN):
+                res = results[index]
+                tmp.append('• ' + res['name'])
+            messages = template + ';\n'.join(tmp) + '.'
+        elif query == '7':
+            template = f'There are {len(results)} {normalize_enum(parameters.get("shop_enum", None))}. Here the first {MAXIMUM_RESULTS_SHOWN}: \n'
+            shop_template = '• {name} is in {address}, {city} ({region})'
+            tmp = []
+            for index in range(MAXIMUM_RESULTS_SHOWN):
+                res = results[index]
+                tmp.append(shop_template.format(name=res['name'], address=res['street'], city=res['city'], region=normalize_from_ontology(res['province'])))
+            messages = template + ';\n'.join(tmp) + '.'
+        elif query == '8':
+            template = 'The {difficulty} difficulty activity paths with duration {time} are: {paths}.'
+        elif query == '9':
+            template = f'There are {len(results)} {parameters.get("path_difficulty", None)} difficulty activity paths {parameters.get("info_equipment", None)}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+            path_template = '• activity path {name} from {poi_from} to {poi_to}'
+            tmp = []
+            for index in range(MAXIMUM_RESULTS_SHOWN):
+                res = results[index]
+                tmp.append(path_template.format(name=res['name'], poi_from=res['poi_from'], poi_to=res['poi_to']))
+            messages = template + ';\n'.join(tmp) + '.'
+        elif query == '12':
+            template = f'There are {len(results)} smooth activity paths. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+            path_template = '• activity path {name} from {poi_from} to {poi_to}'
+            tmp = []
+            for index in range(MAXIMUM_RESULTS_SHOWN):
+                res = results[index]
+                tmp.append(path_template.format(name=res['name'], poi_from=res['poi_from'], poi_to=res['poi_to']))
+            messages = template + ';\n'.join(tmp) + '.'
+        elif query == '13':
+            template = f'There are {len(results)} activity paths from {parameters.get("poi_activity_from", None)} to {parameters.get("poi_activity_to", None)}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+            path_template = '• activity path {name}'
+            tmp = []
+            for index in range(MAXIMUM_RESULTS_SHOWN):
+                res = results[index]
+                tmp.append(path_template.format(name=res['name']))
+            messages = template + ';\n'.join(tmp) + '.'
+        elif query == '14':
+            template = f'There are {len(results)} activity paths with {parameters.get("difficulty", None)} difficulty. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+            path_template = '• activity path {name} from {poi_from} to {poi_to}'
+            tmp = []
+            for index in range(MAXIMUM_RESULTS_SHOWN):
+                res = results[index]
+                tmp.append(path_template.format(name=res['name'], poi_from=res['poi_from'], poi_to=res['poi_to']))
+            messages = template + ';\n'.join(tmp) + '.'
+        elif query == '17':
+            template = f'There are {len(results)} activity paths from {parameters.get("poi_activity_from", None)}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+            path_template = '• activity path {name} from {poi_from} to {poi_to}'
+            tmp = []
+            for index in range(MAXIMUM_RESULTS_SHOWN):
+                res = results[index]
+                tmp.append(path_template.format(name=res['name'], poi_from=res['poi_from'], poi_to=res['poi_to']))
+            messages = template + ';\n'.join(tmp) + '.'
+        elif query == '18':
+            template = f'There are {len(results)} activity paths from {parameters.get("poi_activity_from", None)} to {parameters.get("poi_activity_to", None)}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+            path_template = '• activity path {name} with length {length} and duration'
+            tmp = []
+            for index in range(MAXIMUM_RESULTS_SHOWN):
+                res = results[index]
+                tmp.append(path_template.format(name=res['name'], length=res['length']))
+            messages = template + ';\n'.join(tmp) + '.'
+        elif query == '19':
+            template = f'There are {len(results)} activity paths with number {parameters.get("path_number", None)}.\n\n'
+            tmp = []
+            for res in results:
+                details = f'The activity path {parameters.get("path_number", None)} has the following details:\n'
+                details += f'• activity path {res["name"]};\n'
+                details += f'• difficulty {res["difficulty"]};\n'
+                details += f'• from {res["poi_from"]};\n'
+                details += f'• to {res["poi_to"]};\n'
+                details += f'• length {res["length"]} meters;\n'
+                details += f'• duration {res["time"]} minutes.'
+                tmp.append(details)
+            messages = template + '\n\n'.join(tmp)
+    else:
+        messages = 'No results found with this parameters.'
 
     return messages
 
