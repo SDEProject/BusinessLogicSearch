@@ -26,6 +26,7 @@ class SearchBusinessView(View):
         json_parameters['query'] = query
 
         response = requests.get(f"http://{settings.SERVICE_KNOWLEDGE_HOST}:{settings.SERVICE_KNOWLEDGE_PORT}/{settings.SERVICE_KNOWLEDGE}/queries", json_parameters)
+        print(response)
         json_response = json.loads(response.content)
 
         response = {
