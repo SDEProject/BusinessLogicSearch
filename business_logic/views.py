@@ -69,11 +69,11 @@ def response_templates(query, results, parameters):
                     details += f'• type {normalize_from_ontology(res["accommodationenum"])};\n'
                     if res.get('stars') is not None:
                         details += f'• stars {res["stars"]};\n'
-                    details += f'• {res["street"]} {res["number"]}, {res["city"]} ({normalize_from_ontology(res["province"])}).'
+                    details += f'• {res["street"]} {res["number"]}, {res["city"]} ({normalize_from_ontology(res["province"])});\n'
                     endhour = '00:00' if res['endhour'] == 'None' else res['endhour']
                     details += f'• checkin {res["starthour"]}-{endhour}.'
                     tmp.append(details)
-                messages = template + ';\n'.join(tmp) + '.'
+                messages = template + '\n\n'.join(tmp)
             elif query == '4':
                 template = f'There are {len(results)} {normalize_enum(parameters.get("shop_enum", None))} in {parameters.get("region", None)}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n.'
                 tmp = []
