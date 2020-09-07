@@ -82,11 +82,15 @@ def response_templates(query, results, parameters):
                     tmp.append('• ' + res['name'] + ' ('+res['city']+')')
                 messages = template + ';\n'.join(tmp) + '.'
             elif query == '5':
-                template = f'There {len(results)} {normalize_enum(parameters.get("shop_enum", None))} in {parameters.get("city", None)} ({parameters.get("region", None)}). Here the first {MAXIMUM_RESULTS_SHOWN}:'
+                template = f'There {len(results)} {normalize_enum(parameters.get("shop_enum", None))}'
+                if len(results) <= MAXIMUM_RESULTS_SHOWN:
+                    template += ':\n'
+                else:
+                    template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
-                    tmp.append('• ' + res['name'])
+                    tmp.append(f'• {res["name"]}\n    in {res["street"]} {res["number"]}, {res["city"]} ({normalize_from_ontology(res["province"])})')
                 messages = template + ';\n'.join(tmp) + '.'
             elif query == '7':
                 template = f'There are {len(results)} {normalize_enum(parameters.get("shop_enum", None))}'
@@ -210,4 +214,6 @@ def normalize_from_ontology(value):
 def normalize_enum(value):
     if value == 'S_Bikes':
         return 'bike shop'
+    elif value == 'S_Local_traditional_products':
+        return 'local traditional shops'
     return value
