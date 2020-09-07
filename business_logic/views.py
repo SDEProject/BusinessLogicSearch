@@ -47,14 +47,23 @@ def response_templates(query, results, parameters):
             iterations = min(len(results), MAXIMUM_RESULTS_SHOWN)
             if query == '3':
                 hot = 'hotels' if len(results) > 1 else 'hotel'
-                template = f'I\' ve found {len(results)} {hot}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
-                hotel_template = '• {name} starts checkin at {starthour} and ends at {endhour}'
+                template = f'I\' ve found {len(results)} {hot}.'
+                if len(results) <= MAXIMUM_RESULTS_SHOWN:
+                    template += '\n\n'
+                else:
+                    template += f' The first {MAXIMUM_RESULTS_SHOWN} are:\n\n'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
+                    details = f'The accommodation {res["name"]} has the following details:\n'
+                    details += f'• type {normalize_from_ontology(res["accommodationenum"])};\n'
+                    if res.get('stars') is not None:
+                        details += f'• stars {res["stars"]};\n'
+                    details += f'• {res["street"]} {res["number"]};\n'
                     endhour = '00:00' if res['endhour'] == 'None' else res['endhour']
-                    tmp.append(hotel_template.format(name=res['name'], starthour=res['starthour'], endhour=endhour))
-                messages = template + ';\n'.join(tmp) + '.'
+                    details += f'• checkin {res["starthour"]}-{endhour}.'
+                    tmp.append(details)
+                messages = template + '\n\n'.join(tmp)
             elif query == '6':
                 hot = 'hotels' if len(results) > 1 else 'hotel'
                 template = f'I\' ve found {len(results)} {hot}.'
