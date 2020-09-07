@@ -57,12 +57,21 @@ def response_templates(query, results, parameters):
                 messages = template + ';\n'.join(tmp) + '.'
             elif query == '6':
                 hot = 'hotels' if len(results) > 1 else 'hotel'
-                template = f'I\' ve found {len(results)} {hot}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
-                hotel_template = '• {name} in {city} starts checkin at {starthour} and ends at {endhour}'
+                template = f'I\' ve found {len(results)} {hot}.'
+                if iterations <= MAXIMUM_RESULTS_SHOWN:
+                    template += '\n\n'
+                else:
+                    template += f' The first {MAXIMUM_RESULTS_SHOWN} are:\n\n'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
-                    tmp.append(hotel_template.format(name=res['name'], city=res['city'], starthour=res['starthour'], endhour=res['endhour']))
+                    details = f'The accommodation {res["name"]} has the following details:\n'
+                    details += f'• type {normalize_from_ontology(res["accommodationenum"])};\n'
+                    if res.get('stars') is not None:
+                        details += f'• stars {res["stars"]};\n'
+                    details += f'• {res["street"]} {res["number"]}, {res["city"]} ({normalize_from_ontology(res["province"])}).'
+                    endhour = '00:00' if res['endhour'] == 'None' else res['endhour']
+                    details += f'• checkin {res["starthour"]}-{endhour}.'
                 messages = template + ';\n'.join(tmp) + '.'
             elif query == '4':
                 template = f'There are {len(results)} {normalize_enum(parameters.get("shop_enum", None))} in {parameters.get("region", None)}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n.'
@@ -84,14 +93,14 @@ def response_templates(query, results, parameters):
                     template += ':\n'
                 else:
                     template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
-                shop_template = '• {name}\n\tin {address}, {city} ({region})'
+                shop_template = '• {name}\n    in {address}, {city} ({region})'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
                     tmp.append(shop_template.format(name=res['name'], address=res['street'], city=res['city'], region=normalize_from_ontology(res['province'])))
                 messages = template + ';\n'.join(tmp) + '.'
             elif query == '8':
-                template = 'The {difficulty} difficulty activity paths with duration {time} are: {paths}.'
+                template = 'The {difficulty} difficulty activity paths with duration {time} minutes are: {paths}.'
             elif query == '9':
                 template = f'There are {len(results)} {parameters.get("path_difficulty", None)} difficulty activity paths {parameters.get("info_equipment", None)}.'
                 if iterations <= MAXIMUM_RESULTS_SHOWN:
