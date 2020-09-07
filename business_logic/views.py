@@ -75,35 +75,39 @@ def response_templates(query, results, parameters):
                     tmp.append(details)
                 messages = template + '\n\n'.join(tmp)
             elif query == '4':
-                template = f'There are {len(results)} {normalize_enum(parameters.get("shop_enum", None))} in {parameters.get("region", None)}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n.'
+                template = f'There are {len(results)} {normalize_enum(parameters.get("shop_enum", None))} in {parameters.get("region", None)}'
+                if len(results) <= MAXIMUM_RESULTS_SHOWN:
+                    template += ':\n\n'
+                else:
+                    template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n\n'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
-                    tmp.append('• ' + res['name'] + ' ('+res['city']+')')
-                messages = template + ';\n'.join(tmp) + '.'
+                    tmp.append(f'• {res["name"]}\n    in {res["street"]} {res["number"]}, {res["city"]}')
+                messages = template + ';\n\n'.join(tmp) + '.'
             elif query == '5':
                 template = f'There {len(results)} {normalize_enum(parameters.get("shop_enum", None))}'
                 if len(results) <= MAXIMUM_RESULTS_SHOWN:
-                    template += ':\n'
+                    template += ':\n\n'
                 else:
-                    template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+                    template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n\n'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
                     tmp.append(f'• {res["name"]}\n    in {res["street"]} {res["number"]}, {res["city"]} ({normalize_from_ontology(res["province"])})')
-                messages = template + ';\n'.join(tmp) + '.'
+                messages = template + ';\n\n'.join(tmp) + '.'
             elif query == '7':
                 template = f'There are {len(results)} {normalize_enum(parameters.get("shop_enum", None))}'
                 if len(results) <= MAXIMUM_RESULTS_SHOWN:
-                    template += ':\n'
+                    template += ':\n\n'
                 else:
-                    template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
+                    template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n\n'
                 shop_template = '• {name}\n    in {address}, {city} ({region})'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
                     tmp.append(shop_template.format(name=res['name'], address=res['street'], city=res['city'], region=normalize_from_ontology(res['province'])))
-                messages = template + ';\n'.join(tmp) + '.'
+                messages = template + ';\n\n'.join(tmp) + '.'
             elif query == '8':
                 template = 'The {difficulty} difficulty activity paths with duration {time} minutes are: {paths}.'
             elif query == '9':
