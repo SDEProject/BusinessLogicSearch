@@ -228,5 +228,69 @@ def normalize_enum(value):
     if value == 'S_Bikes':
         return 'bike shop'
     elif value == 'S_Local_traditional_products':
-        return 'local traditional shops'
+        return 'local traditional shop'
+    elif value == 'S_Optician_photography':
+        return 'optician and photography shop'
+    elif value == 'S_Agricoltural_products':
+        return 'agricoltural shop'
+    elif value == 'S_Antiques':
+        return 'antiques shop'
+    elif value == 'S_Artists':
+        return 'artists shop'
+    elif value == 'S_Artist_gilder':
+        return 'artist gilder shop'
+    elif value == 'S_Beverages':
+        return 'beverages shop'
+    elif value == 'S_Bread_baked_goods':
+        return 'bread and baked goods shop'
+    elif value == 'S_Cleanings':
+        return 'cleaning shop'
+    elif value == 'S_Computer_accessories_technology':
+        return 'technology shop'
+    elif value == 'S_Drugstore':
+        return 'drugstore'
+    elif value == 'S_Fashion_clothing':
+        return 'fashion shop'
+    elif value == 'S_Flowers':
+        return 'flower shop'
+    elif value == 'S_Fruits_vegetables':
+        return 'fruits and vegetables market'
+    elif value == 'S_Groceries':
+        return 'groceries'
+    elif value == 'S_Handicrafts':
+        return 'handicrafts'
+    elif value == 'S_Home_furnishings':
+        return 'home furniture shop'
+    elif value == 'S_Housewares':
+        return 'houseware shop'
+    elif value == 'S_Jeweller_Goldsmiths':
+        return 'jeweller'
+    elif value == 'S_Kids_fashion':
+        return 'kids fashion shop'
+    elif value == 'S_Leather_ware_shoes':
+        return 'shoes shop'
+    elif value == 'S_Meat_sausages':
+        return 'butcher'
+    elif value == 'S_More_craft':
+        return 'craft'
+    elif value == 'S_Newspapers_books_stationary':
+        return 'bookstore'
+    elif value == 'S_Paints_Wallpapers':
+        return 'paints shop'
+    elif value == 'S_Pet_supplies':
+        return 'pet supplies shop'
+    elif value == 'S_Production_facilities_farm_shops':
+        return 'farm shop'
+    elif value == 'S_Quill_embroidery':
+        return 'quill embroidery'
+    elif value == 'S_Sculptor':
+        return 'sculptor shop'
+    elif value == 'S_Souvenirs':
+        return 'souvenir shop'
+    elif value == 'S_Sport_equipment':
+        return 'sport equipment shop'
+    elif value == 'S_Toys':
+        return 'toys shop'
+    elif value == 'S_Weaving_mill_arts':
+        return 'weaving mill arts'
     return value
