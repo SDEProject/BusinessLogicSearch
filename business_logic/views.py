@@ -32,6 +32,7 @@ class SearchBusinessView(View):
                 messages, status_code = response_templates(query, json_response['results'], parameters)
             else:
                 messages = json_response['text']
+                status_code = response.status_code
             response = {
                 "fulfillmentMessages": [{
                     "text": {
@@ -40,6 +41,7 @@ class SearchBusinessView(View):
                 }]
             }
         else:
+            status_code = response_query.status_code
             response = {
                 "fulfillmentMessages": [{
                     "text": {
