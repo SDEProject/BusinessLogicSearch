@@ -17,30 +17,43 @@ MAXIMUM_RESULTS_SHOWN = 5
 class SearchBusinessView(View):
     def get(self, request):
         parameters = request.GET
+        status_code = 200
 
         response_query = requests.get(f"http://{settings.SERVICE_QUERY_SELECTION_HOST}:{settings.SERVICE_QUERY_SELECTION_PORT}/{settings.SERVICE_QUERY_SELECTION}/query_selection", parameters)
-        query = json.loads(response_query.content)['query']
-        # returned_params = json.loads(response_query.content)['returned_params']
+        if response_query.status_code == 200:
+            query = json.loads(response_query.content)['query']
 
-        json_parameters = dict(parameters)
-        json_parameters['query'] = query
+            json_parameters = dict(parameters)
+            json_parameters['query'] = query
 
-        response = requests.get(f"http://{settings.SERVICE_KNOWLEDGE_HOST}:{settings.SERVICE_KNOWLEDGE_PORT}/{settings.SERVICE_KNOWLEDGE}/queries", json_parameters)
-        json_response = json.loads(response.content)
-
-        response = {
-            "fulfillmentMessages": [{
-                "text": {
-                    "text": [response_templates(query, json_response['results'], parameters)]
-                }
-            }]
-        }
-        return JsonResponse(response)
+            response = requests.get(f"http://{settings.SERVICE_KNOWLEDGE_HOST}:{settings.SERVICE_KNOWLEDGE_PORT}/{settings.SERVICE_KNOWLEDGE}/queries", json_parameters)
+            json_response = json.loads(response.content)
+            if response.status_code == 200:
+                messages, status_code = response_templates(query, json_response['results'], parameters)
+            else:
+                messages = json_response['text']
+            response = {
+                "fulfillmentMessages": [{
+                    "text": {
+                        "text": [messages]
+                    }
+                }]
+            }
+        else:
+            response = {
+                "fulfillmentMessages": [{
+                    "text": {
+                        "text": ['Sorry, I cannot resolve your request.']
+                    }
+                }]
+            }
+        return JsonResponse(response, status=status_code)
 
 
 def response_templates(query, results, parameters):
     messages = ''
     print(results)
+    status_code = 200
 
     if len(results) > 0:
         try:
@@ -214,10 +227,12 @@ def response_templates(query, results, parameters):
         except:
             print('Error in generating response.')
             messages = 'Sorry, I had a problem in generating the response for you.'
+            status_code = 500
     else:
         messages = 'No results found with these parameters.'
+        status_code = 404
 
-    return messages
+    return messages, status_code
 
 
 def normalize_from_ontology(value):
