@@ -56,10 +56,8 @@ def response_templates(query, results, parameters):
     messages = ''
     print(results)
     status_code = 200
-    print(query)
 
     if len(results) > 0:
-        print('here')
         try:
             iterations = min(len(results), MAXIMUM_RESULTS_SHOWN)
             if query == '3':
@@ -211,7 +209,8 @@ def response_templates(query, results, parameters):
             elif query == '19':
                 template = f'There are {len(results)} activity paths with number {parameters.get("path_number", None)}.\n\n'
                 tmp = []
-                for res in results:
+                for index in range(iterations):
+                    res = results[index]
                     details = f'The activity path {res["name"]} has the following details:\n'
                     details += f'• from {res["poi_from"]};\n'
                     details += f'• to {res["poi_to"]};\n'
@@ -259,10 +258,10 @@ def response_templates(query, results, parameters):
                     tmp.append(details)
                 messages = template + '\n\n'.join(tmp)
             elif query == '27':
-                print('inside')
                 template = f'There are {len(results)} activity paths {parameters.get("info_equipment", None)}.\n\n'
                 tmp = []
-                for res in results:
+                for index in range(iterations):
+                    res = results[index]
                     details = f'The activity path {res["name"]} has the following details:\n'
                     details += f'• from {res["poi_from"]};\n'
                     details += f'• to {res["poi_to"]};\n'
@@ -271,7 +270,6 @@ def response_templates(query, results, parameters):
                     details += f'• duration {res["time"]["#text"]} minutes.'
                     tmp.append(details)
                 messages = template + '\n\n'.join(tmp)
-                print(messages)
             elif query == '28':
                 template = f'There are {len(results)} {normalize_enum(parameters.get("shop_enum", None))} in {parameters.get("comune", None)}'
                 if len(results) <= MAXIMUM_RESULTS_SHOWN:
