@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.views import View
+from datetime import datetime
 from requests import Response
 from rest_framework import viewsets, mixins
 from travelando import settings
@@ -62,7 +63,8 @@ def response_templates(query, results, parameters):
             iterations = min(len(results), MAXIMUM_RESULTS_SHOWN)
             if query == '3':
                 hot = 'hotels' if len(results) > 1 else 'hotel'
-                template = f'I\' ve found {len(results)} {hot} in which you can checkin at {parameters.get("checkin", None)}.'
+                date_time_obj = datetime.strptime(parameters.get("checkin", None), '%Y-%m-%dT%H:%M:%S+02:00')
+                template = f'I\' ve found {len(results)} {hot} in which you can checkin at {date_time_obj.hour}:{date_time_obj.minute}.'
                 if len(results) <= MAXIMUM_RESULTS_SHOWN:
                     template += '\n\n'
                 else:
@@ -81,7 +83,8 @@ def response_templates(query, results, parameters):
                 messages = template + '\n\n'.join(tmp)
             elif query == '6':
                 hot = 'hotels' if len(results) > 1 else 'hotel'
-                template = f'I\' ve found {len(results)} {hot} in which you can checkin at {parameters.get("checkin", None)}.'
+                date_time_obj = datetime.strptime(parameters.get("checkin", None), '%Y-%m-%dT%H:%M:%S+02:00')
+                template = f'I\' ve found {len(results)} {hot} in which you can checkin at {date_time_obj.hour}:{date_time_obj.minute}.'
                 if len(results) <= MAXIMUM_RESULTS_SHOWN:
                     template += '\n\n'
                 else:
