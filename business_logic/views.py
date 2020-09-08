@@ -62,7 +62,7 @@ def response_templates(query, results, parameters):
             iterations = min(len(results), MAXIMUM_RESULTS_SHOWN)
             if query == '3':
                 hot = 'hotels' if len(results) > 1 else 'hotel'
-                template = f'I\' ve found {len(results)} {hot}.'
+                template = f'I\' ve found {len(results)} {hot} in which you can checkin at {parameters.get("checkin", None)}.'
                 if len(results) <= MAXIMUM_RESULTS_SHOWN:
                     template += '\n\n'
                 else:
@@ -81,7 +81,7 @@ def response_templates(query, results, parameters):
                 messages = template + '\n\n'.join(tmp)
             elif query == '6':
                 hot = 'hotels' if len(results) > 1 else 'hotel'
-                template = f'I\' ve found {len(results)} {hot}.'
+                template = f'I\' ve found {len(results)} {hot} in which you can checkin at {parameters.get("checkin", None)}.'
                 if len(results) <= MAXIMUM_RESULTS_SHOWN:
                     template += '\n\n'
                 else:
@@ -126,11 +126,11 @@ def response_templates(query, results, parameters):
                     template += ':\n\n'
                 else:
                     template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n\n'
-                shop_template = '• {name}\n    in {address}, {city} ({region})'
+                shop_template = '• {name}\n    in {address} {number}, {city} ({region})'
                 tmp = []
                 for index in range(iterations):
                     res = results[index]
-                    tmp.append(shop_template.format(name=res['name'], address=res['street'], city=res['city'], region=normalize_from_ontology(res['province'])))
+                    tmp.append(shop_template.format(name=res['name'], number=res['number'], address=res['street'], city=res['city'], region=normalize_from_ontology(res['province'])))
                 messages = template + ';\n\n'.join(tmp) + '.'
             elif query == '8':
                 template = 'The {difficulty} difficulty activity paths with duration {time} minutes are: {paths}.'
@@ -157,14 +157,6 @@ def response_templates(query, results, parameters):
                 for index in range(iterations):
                     res = results[index]
                     tmp.append(path_template.format(name=res['name'], poi_from=res['poi_from'], poi_to=res['poi_to']))
-                messages = template + ';\n'.join(tmp) + '.'
-            elif query == '13':
-                template = f'There are {len(results)} activity paths from {parameters.get("poi_activity_from", None)} to {parameters.get("poi_activity_to", None)}. Here the first {MAXIMUM_RESULTS_SHOWN}:\n'
-                path_template = '• activity path {name}'
-                tmp = []
-                for index in range(iterations):
-                    res = results[index]
-                    tmp.append(path_template.format(name=res['name']))
                 messages = template + ';\n'.join(tmp) + '.'
             elif query == '14':
                 template = f'There are {len(results)} activity paths with {parameters.get("difficulty", None)} difficulty.'
@@ -226,6 +218,126 @@ def response_templates(query, results, parameters):
                     details += f'• duration {res["time"]["#text"]} minutes.'
                     tmp.append(details)
                 messages = template + '\n\n'.join(tmp)
+            elif query == '25':
+                hot = 'hotels' if len(results) > 1 else 'hotel'
+                template = f'I\' ve found {len(results)} {hot} in {parameters.get("comune", None)}.'
+                if len(results) <= MAXIMUM_RESULTS_SHOWN:
+                    template += '\n\n'
+                else:
+                    template += f' The first {MAXIMUM_RESULTS_SHOWN} are:\n\n'
+                tmp = []
+                for index in range(iterations):
+                    res = results[index]
+                    details = f'The accommodation {res["name"]} has the following details:\n'
+                    details += f'• type {normalize_from_ontology(res["accommodationenum"])};\n'
+                    if res.get('stars') is not None:
+                        details += f'• stars {res["stars"]};\n'
+                    details += f'• {res["street"]} {res["number"]};\n'
+                    endhour = '00:00' if res['endhour'] == 'None' else res['endhour']
+                    details += f'• checkin {res["starthour"]}-{endhour}.'
+                    tmp.append(details)
+                messages = template + '\n\n'.join(tmp)
+            elif query == '26':
+                hot = 'hotels' if len(results) > 1 else 'hotel'
+                template = f'I\' ve found {len(results)} {hot} in {parameters.get("region", None)}.'
+                if len(results) <= MAXIMUM_RESULTS_SHOWN:
+                    template += '\n\n'
+                else:
+                    template += f' The first {MAXIMUM_RESULTS_SHOWN} are:\n\n'
+                tmp = []
+                for index in range(iterations):
+                    res = results[index]
+                    details = f'The accommodation {res["name"]} has the following details:\n'
+                    details += f'• type {normalize_from_ontology(res["accommodationenum"])};\n'
+                    if res.get('stars') is not None:
+                        details += f'• stars {res["stars"]};\n'
+                    details += f'• {res["street"]} {res["number"]}, {res["city"]};\n'
+                    endhour = '00:00' if res['endhour'] == 'None' else res['endhour']
+                    details += f'• checkin {res["starthour"]}-{endhour}.'
+                    tmp.append(details)
+                messages = template + '\n\n'.join(tmp)
+            elif query == '27':
+                template = f'There are {len(results)} activity paths {parameters.get("info_equipment", None)}.\n\n'
+                tmp = []
+                for res in results:
+                    details = f'The activity path {res["name"]} has the following details:\n'
+                    details += f'• from {res["poi_from"]};\n'
+                    details += f'• to {res["poi_to"]};\n'
+                    details += f'• difficulty {normalize_from_ontology(res["difficulty"])};\n'
+                    details += f'• length {res["length"]["#text"]} meters;\n'
+                    details += f'• duration {res["time"]["#text"]} minutes.'
+                    tmp.append(details)
+                messages = template + '\n\n'.join(tmp)
+            elif query == '28':
+                template = f'There are {len(results)} {normalize_enum(parameters.get("shop_enum", None))} in {parameters.get("comune", None)}'
+                if len(results) <= MAXIMUM_RESULTS_SHOWN:
+                    template += ':\n\n'
+                else:
+                    template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n\n'
+                shop_template = '• {name}\n    in {address} {number}'
+                tmp = []
+                for index in range(iterations):
+                    res = results[index]
+                    tmp.append(shop_template.format(name=res['name'], address=res['street'], number=res['number']))
+                messages = template + ';\n\n'.join(tmp) + '.'
+            elif query == '29':
+                hot = 'hotels' if len(results) > 1 else 'hotel'
+                template = f'I\' ve found {len(results)} {hot}.'
+                if len(results) <= MAXIMUM_RESULTS_SHOWN:
+                    template += '\n\n'
+                else:
+                    template += f' The first {MAXIMUM_RESULTS_SHOWN} are:\n\n'
+                tmp = []
+                for index in range(iterations):
+                    res = results[index]
+                    details = f'The accommodation {res["name"]} has the following details:\n'
+                    details += f'• type {normalize_from_ontology(res["accommodationenum"])};\n'
+                    if res.get('stars') is not None:
+                        details += f'• stars {res["stars"]};\n'
+                    details += f'• {res["street"]} {res["number"]}, {res["city"]} ({normalize_from_ontology(res["province"])});\n'
+                    endhour = '00:00' if res['endhour'] == 'None' else res['endhour']
+                    details += f'• checkin {res["starthour"]}-{endhour}.'
+                    tmp.append(details)
+                messages = template + '\n\n'.join(tmp)
+            elif query == '30':
+                template = f'There are {len(results)} {parameters.get("subject", None).lower()} in {parameters.get("comune", None)}'
+                if len(results) <= MAXIMUM_RESULTS_SHOWN:
+                    template += ':\n\n'
+                else:
+                    template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n\n'
+                shop_template = '• {name}\n    in {address} {number}'
+                tmp = []
+                for index in range(iterations):
+                    res = results[index]
+                    tmp.append(shop_template.format(name=res['name'], address=res['street'], number=res['number']))
+                messages = template + ';\n\n'.join(tmp) + '.'
+            elif query == '31':
+                template = f'There are {len(results)} {parameters.get("subject", None).lower()} in {parameters.get("region", None)}'
+                if len(results) <= MAXIMUM_RESULTS_SHOWN:
+                    template += ':\n\n'
+                else:
+                    template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n\n'
+                shop_template = '• {name}\n    in {address} {number}, {city}'
+                tmp = []
+                for index in range(iterations):
+                    res = results[index]
+                    tmp.append(shop_template.format(name=res['name'], address=res['street'], number=res['number'], city=res['city']))
+                messages = template + ';\n\n'.join(tmp) + '.'
+            elif query == '32':
+                template = f'There are {len(results)} {parameters.get("subject", None).lower()} in {parameters.get("region", None)}'
+                if len(results) <= MAXIMUM_RESULTS_SHOWN:
+                    template += ':\n\n'
+                else:
+                    template += f'. Here the first {MAXIMUM_RESULTS_SHOWN}:\n\n'
+                shop_template = '• {name}\n    in {address} {number}, {city} ({region})'
+                tmp = []
+                for index in range(iterations):
+                    res = results[index]
+                    tmp.append(shop_template.format(name=res['name'], address=res['street'], number=res['number'], city=res['city'], region=normalize_from_ontology(res['province'])))
+                messages = template + ';\n\n'.join(tmp) + '.'
+            else:
+                messages = 'No results found with these parameters.'
+                status_code = 404
         except:
             print('Error in generating response.')
             messages = 'Sorry, I had a problem in generating the response for you.'
