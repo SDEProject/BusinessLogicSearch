@@ -160,7 +160,7 @@ def response_templates(query, results, parameters):
                     details = f'The activity path {res["name"]} has the following details:\n'
                     details += f'• from {res["poi_from"]};\n'
                     details += f'• to {res["poi_to"]};\n'
-                    details += f'• difficulty {normalize_from_ontology(res["difficulty"])};\n'
+                    details += f'• difficulty Low;\n'
                     details += f'• length {res["length"]["#text"]} meters;\n'
                     details += f'• duration {res["time"]["#text"]} minutes.'
                     tmp.append(details)
