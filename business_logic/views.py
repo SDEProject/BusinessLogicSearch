@@ -169,7 +169,7 @@ def response_templates(query, results, parameters):
                     tmp.append(details)
                 messages = template + '\n\n'.join(tmp)
             elif query == '14':
-                template = f'There are {len(results)} activity paths with {parameters.get("difficulty", None)} difficulty.'
+                template = f'There are {len(results)} activity paths with {parameters.get("path_difficulty", None)} difficulty.'
                 if len(results) <= MAXIMUM_RESULTS_SHOWN:
                     template += '\n\n'
                 else:
